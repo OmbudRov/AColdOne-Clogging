@@ -42,6 +42,7 @@ public class AColdOneCloggingPlugin extends Plugin
 	private static final Set<Integer> BadClogSettings = new HashSet<>(){{add(0);add(2);}};
 	private int LastClogWarning=-1;
 	private int LastLoginTick=-1;
+	private boolean LoggedIn = false;
 
 	@Override
 	protected void startUp() throws Exception
@@ -55,6 +56,24 @@ public class AColdOneCloggingPlugin extends Plugin
 		soundEngine.close();
 	}
 
+	@Subscribe
+	protected void onGameStateChanged(GameStateChanged stateChanged)
+	{
+		LoggedIn = stateChanged.getGameState()==GameState.LOGGED_IN;
+		switch (stateChanged.getGameState())
+		{
+			case LOGIN_SCREEN:
+			case LOGGING_IN:
+			case HOPPING:
+			case CONNECTION_LOST:
+				LastLoginTick=-1;
+				LastClogWarning=client.getTickCount();
+				break;
+			case LOGGED_IN:
+				LastLoginTick=client.getTickCount();
+				break;
+		}
+	}
 	@Subscribe
 	public void onChatMessage(ChatMessage chatMessage)
 	{
