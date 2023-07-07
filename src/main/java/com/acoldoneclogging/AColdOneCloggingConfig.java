@@ -5,7 +5,7 @@ import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.Range;
 
-@ConfigGroup("example")
+@ConfigGroup("AColdOneClogging")
 public interface AColdOneCloggingConfig extends Config
 {
 	@Range(
