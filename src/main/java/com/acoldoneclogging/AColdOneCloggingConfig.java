@@ -1,13 +1,16 @@
 package com.acoldoneclogging;
 
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
-import net.runelite.client.config.Range;
+import net.runelite.client.config.*;
 
 @ConfigGroup("AColdOneClogging")
 public interface AColdOneCloggingConfig extends Config
 {
+	@ConfigSection(
+			name = "Misc Sounds",
+			description = "Any Extra funny sounds that i may add",
+			position = 1
+	)
+	String Misc="misc";
 	@Range(
 		min = 0,
 		max = 200
@@ -20,5 +23,15 @@ public interface AColdOneCloggingConfig extends Config
 	default int Volume()
 	{
 		return 100;
+	}
+	@ConfigItem(
+			keyName = "Balled",
+			name = "Getting Balled",
+			description = "Get Balled Lmao",
+			section = Misc
+	)
+	default boolean Balled()
+	{
+		return true;
 	}
 }

@@ -9,7 +9,9 @@ public enum Sound
 	CollectionLog_5("/Clogging_5.wav"),
 	CollectionLog_6("/Clogging_6.wav"),
 	CollectionLog_7("/Clogging_7.wav"),
-	CollectionLog_8("/Clogging_8.wav");
+	CollectionLog_8("/Clogging_8.wav"),
+
+	Balled_1("/Balled_1.wav");
 	private final String ResourceName;
 
 	Sound(String resName)
