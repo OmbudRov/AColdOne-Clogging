@@ -2,13 +2,14 @@ package com.acoldoneclogging;
 
 import com.google.inject.Provides;
 
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.io.File;
+import java.util.*;
+import java.util.Timer;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
+import javax.swing.*;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
@@ -24,6 +25,7 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.ui.overlay.OverlayManager;
 
 @Slf4j
 @PluginDescriptor(name = "AColdOne Clogging")
@@ -39,6 +41,10 @@ public class AColdOneCloggingPlugin extends Plugin {
     private ChatMessageManager chatMessageManager;
     @Inject
     private ScheduledExecutorService executorService;
+    @Inject
+    private OverlayManager overlayManager;
+
+    private final WideLeoOverlay wideLeoOverlay =new WideLeoOverlay();
     private static final Pattern ClogRegex = Pattern.compile("New item added to your collection log:.*");
     private static final Set<Integer> BadClogSettings = new HashSet<>() {{
         add(0);
@@ -47,12 +53,14 @@ public class AColdOneCloggingPlugin extends Plugin {
     private int LastClogWarning = -1;
     private int LastLoginTick = -1;
     private int lastBalledTick = -1;
-    private boolean LoggedIn = false;
     private boolean functionRunning = false;
+    private final String[] wideLeoIcons = new String[52];
+
 
     @Override
     protected void startUp() throws Exception {
         LastLoginTick = -1;
+        LeoWidenSetup();
     }
 
     @Override
@@ -62,7 +70,6 @@ public class AColdOneCloggingPlugin extends Plugin {
 
     @Subscribe
     protected void onGameStateChanged(GameStateChanged stateChanged) {
-        LoggedIn = stateChanged.getGameState() == GameState.LOGGED_IN;
         switch (stateChanged.getGameState()) {
             case LOGIN_SCREEN:
             case LOGGING_IN:
@@ -79,11 +86,21 @@ public class AColdOneCloggingPlugin extends Plugin {
 
     @Subscribe
     public void onChatMessage(ChatMessage chatMessage) {
-        if (ClogRegex.matcher(chatMessage.getMessage()).matches()) {
-            Random random = new Random();
-            int logNumber = random.nextInt(8) + 1;
-            Sound selectedLog = Sound.valueOf("CollectionLog_" + logNumber);
-            soundEngine.playClip(selectedLog);
+        if (chatMessage.getType() == ChatMessageType.PUBLICCHAT) {
+            String Message = chatMessage.getMessage();
+            if (config.WideLeo() && Message.equalsIgnoreCase("!Leo") && chatMessage.getName().equalsIgnoreCase(client.getLocalPlayer().getName())) {
+                overlayManager.add(wideLeoOverlay);
+                LeoWiden();
+            }
+
+        } else if (chatMessage.getType() == ChatMessageType.GAMEMESSAGE) {
+
+            if (ClogRegex.matcher(chatMessage.getMessage()).matches()) {
+                Random random = new Random();
+                int logNumber = random.nextInt(8) + 1;
+                Sound selectedLog = Sound.valueOf("CollectionLog_" + logNumber);
+                soundEngine.playClip(selectedLog);
+            }
         }
     }
 
@@ -138,6 +155,48 @@ public class AColdOneCloggingPlugin extends Plugin {
         String HighlightedMessage = new ChatMessageBuilder().append(ChatColorType.HIGHLIGHT).append(Message).build();
 
         chatMessageManager.queue(QueuedMessage.builder().type(ChatMessageType.CONSOLE).runeLiteFormattedMessage(HighlightedMessage).build());
+    }
+
+    public void LeoWiden() {
+        final Timer timer = new Timer();
+        long interval = 40; // One second in milliseconds
+
+        TimerTask task = new TimerTask() {
+            int currentIndex = 0;
+
+            @Override
+            public void run() {
+                if (currentIndex < wideLeoIcons.length) {
+                    String image = wideLeoIcons[currentIndex];
+                    wideLeoOverlay.setImage(image);
+                    currentIndex++;
+                } else {
+                    // All iterations completed, cancel the timer
+                    timer.cancel();
+                    executorService.schedule(()->{
+                        overlayManager.remove(wideLeoOverlay);
+                    },250,TimeUnit.MILLISECONDS);
+                }
+            }
+        };
+
+        // Schedule the task to run at fixed intervals
+        timer.scheduleAtFixedRate(task, 0, interval);
+    }
+
+    public void LeoWidenSetup() {
+        int i = 0;
+        File folder = new File("src/main/resources/WideLeo");
+        File[] ImageFiles = folder.listFiles();
+        if (ImageFiles != null) {
+            for (File file : ImageFiles) {
+                ImageIcon imageIcon = new ImageIcon(file.getAbsolutePath());
+                if (imageIcon.getIconWidth() > 0 && imageIcon.getIconHeight() > 0) {
+                    wideLeoIcons[i] = "/WideLeo/" + file.getName();
+                    i++;
+                }
+            }
+        }
     }
 
     @Provides

@@ -34,4 +34,14 @@ public interface AColdOneCloggingConfig extends Config
 	{
 		return true;
 	}
+	@ConfigItem(
+			keyName = "WideLeo",
+			name = "Wide Leo Emote",
+			description = "Overlay the 7TV emote \"LeoWidenUp\" on the screen when saying \"!Leo\" ",
+			section = Misc
+	)
+	default boolean WideLeo()
+	{
+		return true;
+	}
 }
