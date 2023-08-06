@@ -25,6 +25,22 @@ public interface AColdOneCloggingConfig extends Config
 		return 100;
 	}
 	@ConfigItem(
+			keyName = "AnnounceClog",
+			name = "Collection Logs",
+			description = "Announces Collection Logs with an Audio Clip"
+	)
+	default boolean AnnounceClog(){
+		return true;
+	}
+	@ConfigItem(
+			keyName = "AnnounceCombatTasks",
+			name = "Combat Achievements",
+			description = "Announces Combat Task Completions with an Audio Clip"
+	)
+	default boolean AnnounceCombatTasks(){
+		return true;
+	}
+	@ConfigItem(
 			keyName = "Balled",
 			name = "Getting Balled",
 			description = "Get Balled Lmao",

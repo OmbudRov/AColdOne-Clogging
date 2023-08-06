@@ -1,5 +1,6 @@
-package com.acoldoneclogging;
+package com.acoldoneclogging.Overlays;
 
+import com.acoldoneclogging.AColdOneCloggingPlugin;
 import net.runelite.api.Client;
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -13,7 +14,7 @@ public class WideLeoOverlay extends OverlayPanel {
     @Inject
     private Client client;
     private BufferedImage bufferedImage;
-    WideLeoOverlay() {
+    public WideLeoOverlay() {
         bufferedImage = ImageUtil.loadImageResource(WideLeoOverlay.class, "/WideLeo/00.gif");
         setPosition(OverlayPosition.DYNAMIC);
     }

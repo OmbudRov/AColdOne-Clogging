@@ -1,5 +1,6 @@
 package com.acoldoneclogging;
 
+import com.acoldoneclogging.Overlays.WideLeoOverlay;
 import com.google.inject.Provides;
 
 import java.io.File;
@@ -13,10 +14,7 @@ import javax.swing.*;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
-import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.ProjectileMoved;
-import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.events.*;
 import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.chat.ChatMessageManager;
@@ -46,6 +44,7 @@ public class AColdOneCloggingPlugin extends Plugin {
 
     private final WideLeoOverlay wideLeoOverlay =new WideLeoOverlay();
     private static final Pattern ClogRegex = Pattern.compile("New item added to your collection log:.*");
+    private static final Pattern TaskRegex = Pattern.compile("Congratulations, you've completed an? (?:\\\\w+) combat task:.*");
     private static final Set<Integer> BadClogSettings = new HashSet<>() {{
         add(0);
         add(2);
@@ -95,11 +94,13 @@ public class AColdOneCloggingPlugin extends Plugin {
 
         } else if (chatMessage.getType() == ChatMessageType.GAMEMESSAGE) {
 
-            if (ClogRegex.matcher(chatMessage.getMessage()).matches()) {
+            if (config.AnnounceClog() && ClogRegex.matcher(chatMessage.getMessage()).matches()) {
                 Random random = new Random();
-                int logNumber = random.nextInt(8) + 1;
+                int logNumber = random.nextInt(9) + 1;
                 Sound selectedLog = Sound.valueOf("CollectionLog_" + logNumber);
                 soundEngine.playClip(selectedLog);
+            } else if (config.AnnounceCombatTasks() && TaskRegex.matcher(chatMessage.getMessage()).matches()) {
+                soundEngine.playClip(Sound.valueOf("TaskCompletion"));
             }
         }
     }
