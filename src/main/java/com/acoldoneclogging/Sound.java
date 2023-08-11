@@ -13,6 +13,7 @@ public enum Sound
 	CollectionLog_9("/Clogging_9.wav"),
 
 	Balled_1("/Balled_1.wav"),
+	Baron("/Baron.wav"),
 	TaskCompletion("/TaskCompletion.wav");
 	private final String ResourceName;
 

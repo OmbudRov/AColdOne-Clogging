@@ -2,19 +2,12 @@ package com.acoldoneclogging;
 
 import com.acoldoneclogging.Overlays.WideLeoOverlay;
 import com.google.inject.Provides;
-
-import java.io.File;
-import java.util.*;
-import java.util.Timer;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
-import javax.inject.Inject;
-import javax.swing.*;
-
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
-import net.runelite.api.events.*;
+import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.ProjectileMoved;
+import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.chat.ChatMessageManager;
@@ -24,6 +17,15 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
+
+import javax.inject.Inject;
+import javax.swing.*;
+import java.io.File;
+import java.util.Timer;
+import java.util.*;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 @Slf4j
 @PluginDescriptor(name = "AColdOne Clogging")
@@ -42,9 +44,10 @@ public class AColdOneCloggingPlugin extends Plugin {
     @Inject
     private OverlayManager overlayManager;
 
-    private final WideLeoOverlay wideLeoOverlay =new WideLeoOverlay();
+    private final WideLeoOverlay wideLeoOverlay = new WideLeoOverlay();
     private static final Pattern ClogRegex = Pattern.compile("New item added to your collection log:.*");
     private static final Pattern TaskRegex = Pattern.compile("Congratulations, you've completed an? (?:\\\\w+) combat task:.*");
+    private static final Pattern BaronRegex = Pattern.compile("New item added to your collection log: Baron");
     private static final Set<Integer> BadClogSettings = new HashSet<>() {{
         add(0);
         add(2);
@@ -92,9 +95,11 @@ public class AColdOneCloggingPlugin extends Plugin {
                 LeoWiden();
             }
 
-        } else if (chatMessage.getType() == ChatMessageType.GAMEMESSAGE) {
-
-            if (config.AnnounceClog() && ClogRegex.matcher(chatMessage.getMessage()).matches()) {
+        }
+        if (chatMessage.getType() == ChatMessageType.GAMEMESSAGE) {
+            if (config.Baron() && BaronRegex.matcher(chatMessage.getMessage()).matches()) {
+                soundEngine.playClip(Sound.Baron);
+            } else if (config.AnnounceClog() && ClogRegex.matcher(chatMessage.getMessage()).matches()) {
                 Random random = new Random();
                 int logNumber = random.nextInt(9) + 1;
                 Sound selectedLog = Sound.valueOf("CollectionLog_" + logNumber);
@@ -174,9 +179,9 @@ public class AColdOneCloggingPlugin extends Plugin {
                 } else {
                     // All iterations completed, cancel the timer
                     timer.cancel();
-                    executorService.schedule(()->{
+                    executorService.schedule(() -> {
                         overlayManager.remove(wideLeoOverlay);
-                    },250,TimeUnit.MILLISECONDS);
+                    }, 250, TimeUnit.MILLISECONDS);
                 }
             }
         };

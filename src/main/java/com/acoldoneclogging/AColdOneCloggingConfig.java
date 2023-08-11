@@ -60,4 +60,14 @@ public interface AColdOneCloggingConfig extends Config
 	{
 		return true;
 	}
+	@ConfigItem(
+			keyName = "Baron",
+			name = "Baron",
+			description = "Event for getting the best pet in the game",
+			section = Misc
+	)
+	default boolean Baron()
+	{
+		return true;
+	}
 }
