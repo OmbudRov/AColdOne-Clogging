@@ -155,6 +155,7 @@ public class AColdOneCloggingPlugin extends Plugin {
         executorService.schedule(() -> {
             soundEngine.playClip(Sound.valueOf("Balled_1"));
         }, 0, TimeUnit.SECONDS);
+        functionRunning=false;
     }
 
     public void SendMessage(String Message) {
@@ -191,17 +192,9 @@ public class AColdOneCloggingPlugin extends Plugin {
     }
 
     public void LeoWidenSetup() {
-        int i = 0;
-        File folder = new File("src/main/resources/WideLeo");
-        File[] ImageFiles = folder.listFiles();
-        if (ImageFiles != null) {
-            for (File file : ImageFiles) {
-                ImageIcon imageIcon = new ImageIcon(file.getAbsolutePath());
-                if (imageIcon.getIconWidth() > 0 && imageIcon.getIconHeight() > 0) {
-                    wideLeoIcons[i] = "/WideLeo/" + file.getName();
-                    i++;
-                }
-            }
+        for(int i=0;i<52;i++)
+        {
+            wideLeoIcons[i]="/WideLeo/"+ i +".gif";
         }
     }
 

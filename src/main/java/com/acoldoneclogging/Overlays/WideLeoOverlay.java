@@ -15,7 +15,7 @@ public class WideLeoOverlay extends OverlayPanel {
     private Client client;
     private BufferedImage bufferedImage;
     public WideLeoOverlay() {
-        bufferedImage = ImageUtil.loadImageResource(WideLeoOverlay.class, "/WideLeo/00.gif");
+        bufferedImage = ImageUtil.loadImageResource(WideLeoOverlay.class, "/WideLeo/0.gif");
         setPosition(OverlayPosition.DYNAMIC);
     }
     @Override
