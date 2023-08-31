@@ -166,7 +166,7 @@ public class AColdOneCloggingPlugin extends Plugin {
 
     public void LeoWiden() {
         final Timer timer = new Timer();
-        long interval = 40; // One second in milliseconds
+        long interval = 40;
 
         TimerTask task = new TimerTask() {
             int currentIndex = 0;
@@ -186,8 +186,6 @@ public class AColdOneCloggingPlugin extends Plugin {
                 }
             }
         };
-
-        // Schedule the task to run at fixed intervals
         timer.scheduleAtFixedRate(task, 0, interval);
     }
 
