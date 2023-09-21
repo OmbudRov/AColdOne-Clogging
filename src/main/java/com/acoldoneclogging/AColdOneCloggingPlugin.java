@@ -17,10 +17,9 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
-import javax.swing.*;
-import java.io.File;
 import java.util.Timer;
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
@@ -46,12 +45,13 @@ public class AColdOneCloggingPlugin extends Plugin {
 
     private final WideLeoOverlay wideLeoOverlay = new WideLeoOverlay();
     private static final Pattern ClogRegex = Pattern.compile("New item added to your collection log:.*");
-    private static final Pattern TaskRegex = Pattern.compile("Congratulations, you've completed an? (?:\\\\w+) combat task:.*");
+    private static final Pattern TaskRegex = Pattern.compile("Congratulations, you've completed an? (?:\\w+) combat task:.*");
     private static final Pattern BaronRegex = Pattern.compile("New item added to your collection log: Baron");
     private static final Set<Integer> BadClogSettings = new HashSet<>() {{
         add(0);
         add(2);
     }};
+
     private int LastClogWarning = -1;
     private int LastLoginTick = -1;
     private int lastBalledTick = -1;
@@ -90,21 +90,22 @@ public class AColdOneCloggingPlugin extends Plugin {
     public void onChatMessage(ChatMessage chatMessage) {
         if (chatMessage.getType() == ChatMessageType.PUBLICCHAT) {
             String Message = chatMessage.getMessage();
-            if (config.WideLeo() && Message.equalsIgnoreCase("!Leo") && chatMessage.getName().equalsIgnoreCase(client.getLocalPlayer().getName())) {
+            if (config.WideLeo() && Message.equalsIgnoreCase("!Leo") && Text.sanitize(chatMessage.getName()).equalsIgnoreCase(client.getLocalPlayer().getName())) {
                 overlayManager.add(wideLeoOverlay);
                 LeoWiden();
             }
 
         }
         if (chatMessage.getType() == ChatMessageType.GAMEMESSAGE) {
+            String Message = chatMessage.getMessage();
             if (config.Baron() && BaronRegex.matcher(chatMessage.getMessage()).matches()) {
                 soundEngine.playClip(Sound.Baron);
-            } else if (config.AnnounceClog() && ClogRegex.matcher(chatMessage.getMessage()).matches()) {
+            } else if (config.AnnounceClog() && ClogRegex.matcher(Message).matches()) {
                 Random random = new Random();
                 int logNumber = random.nextInt(9) + 1;
                 Sound selectedLog = Sound.valueOf("CollectionLog_" + logNumber);
                 soundEngine.playClip(selectedLog);
-            } else if (config.AnnounceCombatTasks() && TaskRegex.matcher(chatMessage.getMessage()).matches()) {
+            } else if (config.AnnounceCombatTasks() && TaskRegex.matcher(Message).matches()) {
                 soundEngine.playClip(Sound.valueOf("TaskCompletion"));
             }
         }
@@ -128,16 +129,16 @@ public class AColdOneCloggingPlugin extends Plugin {
 
     @Subscribe
     public void onProjectileMoved(ProjectileMoved projectileMoved) {
+        int currentTick = client.getTickCount();
+        if (currentTick - lastBalledTick > 100) {
+            functionRunning = false;
+        }
         if (functionRunning) {
             return;
         }
         functionRunning = true;
         Projectile projectile = projectileMoved.getProjectile();
         if (projectile.getId() != 55) {
-            return;
-        }
-        int currentTick = client.getTickCount();
-        if (currentTick - lastBalledTick < 1) {
             return;
         }
         Actor Me = client.getLocalPlayer();
@@ -155,7 +156,7 @@ public class AColdOneCloggingPlugin extends Plugin {
         executorService.schedule(() -> {
             soundEngine.playClip(Sound.valueOf("Balled_1"));
         }, 0, TimeUnit.SECONDS);
-        functionRunning=false;
+        functionRunning = false;
     }
 
     public void SendMessage(String Message) {
@@ -190,9 +191,8 @@ public class AColdOneCloggingPlugin extends Plugin {
     }
 
     public void LeoWidenSetup() {
-        for(int i=0;i<52;i++)
-        {
-            wideLeoIcons[i]="/WideLeo/"+ i +".gif";
+        for (int i = 0; i < 52; i++) {
+            wideLeoIcons[i] = "/WideLeo/" + i + ".gif";
         }
     }
 
