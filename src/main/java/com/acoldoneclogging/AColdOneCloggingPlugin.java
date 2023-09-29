@@ -146,7 +146,7 @@ public class AColdOneCloggingPlugin extends Plugin {
     @Subscribe
     public void onProjectileMoved(ProjectileMoved projectileMoved) {
         int currentTick = client.getTickCount();
-        if (currentTick - lastBalledTick > 10) {
+        if (currentTick - lastBalledTick > 500) {
             functionRunning = false;
         }
         if (functionRunning) {
