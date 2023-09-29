@@ -172,7 +172,9 @@ public class AColdOneCloggingPlugin extends Plugin {
         client.getLocalPlayer().setOverheadText("Oh no, i got balled");
         executorService.schedule(() -> {
             soundEngine.playClip(Sound.valueOf("Balled_1"));
-            sendScreenshot();
+            if (config.BalledScreenshot()) {
+                sendScreenshot();
+            }
             client.getLocalPlayer().setOverheadText("");
         }, 1200, TimeUnit.MILLISECONDS);
     }

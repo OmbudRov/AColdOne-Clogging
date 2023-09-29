@@ -57,6 +57,16 @@ public interface AColdOneCloggingConfig extends Config
 		return true;
 	}
 	@ConfigItem(
+			keyName = "BalledScreenshot",
+			name = "Screenshot of getting Balled",
+			description = "Screenshot of you getting balled being shared in the #gatored-balled channel of the AColdOne Discord Server",
+			section = Misc
+	)
+	default boolean BalledScreenshot()
+	{
+		return true;
+	}
+	@ConfigItem(
 			keyName = "Baron",
 			name = "Baron",
 			description = "Event for getting the best pet in the game",
