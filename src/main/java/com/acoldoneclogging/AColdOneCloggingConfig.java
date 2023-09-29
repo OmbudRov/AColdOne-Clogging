@@ -66,6 +66,14 @@ public interface AColdOneCloggingConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigItem(
+			keyName = "WebhookLink",
+			name = "Discord Webhook Link",
+			description = "Discord Webhook Link to send screenshot to",
+			section = Misc
+	)
+	default String WebhookLink() { return "";}
 	@ConfigItem(
 			keyName = "Baron",
 			name = "Baron",

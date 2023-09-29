@@ -172,7 +172,7 @@ public class AColdOneCloggingPlugin extends Plugin {
         client.getLocalPlayer().setOverheadText("Oh no, i got balled");
         executorService.schedule(() -> {
             soundEngine.playClip(Sound.valueOf("Balled_1"));
-            if (config.BalledScreenshot()) {
+            if (config.BalledScreenshot() && config.WebhookLink()!=null) {
                 sendScreenshot();
             }
             client.getLocalPlayer().setOverheadText("");
@@ -250,7 +250,7 @@ public class AColdOneCloggingPlugin extends Plugin {
         DiscordWebhookBody discordWebhookBody = new DiscordWebhookBody();
         discordWebhookBody.setContent(MessageString);
 
-        String webhookLink = "https://discord.com/api/webhooks/1155241231476080690/i6qyKOfzyumahm21Vt6ln5gXJQxmMKWZUwXH7AjSb3nCaxjxygrReTO87mobtP4I61T5";
+        String webhookLink = config.WebhookLink();
         HttpUrl url = HttpUrl.parse(webhookLink);
         MultipartBody.Builder requestBodyBuilder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
