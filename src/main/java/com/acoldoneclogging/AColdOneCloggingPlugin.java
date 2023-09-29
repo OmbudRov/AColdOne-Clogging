@@ -1,5 +1,6 @@
 package com.acoldoneclogging;
 
+import com.acoldoneclogging.Overlays.LeoSpinOverlay;
 import com.acoldoneclogging.Overlays.WideLeoOverlay;
 import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
@@ -16,15 +17,22 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.ui.DrawManager;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.Text;
+import okhttp3.*;
 
+import javax.imageio.ImageIO;
 import javax.inject.Inject;
-import java.util.Timer;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
+
+import static net.runelite.http.api.RuneLiteAPI.GSON;
 
 @Slf4j
 @PluginDescriptor(name = "AColdOne Clogging")
@@ -42,8 +50,14 @@ public class AColdOneCloggingPlugin extends Plugin {
     private ScheduledExecutorService executorService;
     @Inject
     private OverlayManager overlayManager;
+    @Inject
+    private DrawManager drawManager;
+    @Inject
+    private OkHttpClient okHttpClient;
 
     private final WideLeoOverlay wideLeoOverlay = new WideLeoOverlay();
+    private final LeoSpinOverlay leoSpinOverlay = new LeoSpinOverlay();
+    private final DiscordWebhookBody discordWebhook = new DiscordWebhookBody();
     private static final Pattern ClogRegex = Pattern.compile("New item added to your collection log:.*");
     private static final Pattern TaskRegex = Pattern.compile("Congratulations, you've completed an? (?:\\w+) combat task:.*");
     private static final Pattern BaronRegex = Pattern.compile("New item added to your collection log: Baron");
@@ -53,16 +67,16 @@ public class AColdOneCloggingPlugin extends Plugin {
     }};
 
     private int LastClogWarning = -1;
-    private int LastLoginTick = -1;
+
     private int lastBalledTick = -1;
     private boolean functionRunning = false;
     private final String[] wideLeoIcons = new String[52];
+    private final String[] leoSpinIcons = new String[66];
 
 
     @Override
     protected void startUp() throws Exception {
-        LastLoginTick = -1;
-        LeoWidenSetup();
+        OverlaysSetup();
     }
 
     @Override
@@ -77,11 +91,9 @@ public class AColdOneCloggingPlugin extends Plugin {
             case LOGGING_IN:
             case HOPPING:
             case CONNECTION_LOST:
-                LastLoginTick = -1;
                 LastClogWarning = client.getTickCount();
                 break;
             case LOGGED_IN:
-                LastLoginTick = client.getTickCount();
                 break;
         }
     }
@@ -90,9 +102,13 @@ public class AColdOneCloggingPlugin extends Plugin {
     public void onChatMessage(ChatMessage chatMessage) {
         if (chatMessage.getType() == ChatMessageType.PUBLICCHAT) {
             String Message = chatMessage.getMessage();
-            if (config.WideLeo() && Message.equalsIgnoreCase("!Leo") && Text.sanitize(chatMessage.getName()).equalsIgnoreCase(client.getLocalPlayer().getName())) {
+            boolean isUser = Text.sanitize(chatMessage.getName()).equalsIgnoreCase(client.getLocalPlayer().getName());
+            if (config.WideLeo() && Message.equalsIgnoreCase("!Leo") && isUser) {
                 overlayManager.add(wideLeoOverlay);
                 LeoWiden();
+            } else if (config.LeoSpin() && Message.equalsIgnoreCase("!LeoSpin") && isUser) {
+                overlayManager.add(leoSpinOverlay);
+                LeoSpin();
             }
 
         }
@@ -102,7 +118,7 @@ public class AColdOneCloggingPlugin extends Plugin {
                 soundEngine.playClip(Sound.Baron);
             } else if (config.AnnounceClog() && ClogRegex.matcher(Message).matches()) {
                 Random random = new Random();
-                int logNumber = random.nextInt(9) + 1;
+                int logNumber = random.nextInt(10) + 1;
                 Sound selectedLog = Sound.valueOf("CollectionLog_" + logNumber);
                 soundEngine.playClip(selectedLog);
             } else if (config.AnnounceCombatTasks() && TaskRegex.matcher(Message).matches()) {
@@ -130,13 +146,12 @@ public class AColdOneCloggingPlugin extends Plugin {
     @Subscribe
     public void onProjectileMoved(ProjectileMoved projectileMoved) {
         int currentTick = client.getTickCount();
-        if (currentTick - lastBalledTick > 100) {
+        if (currentTick - lastBalledTick > 10) {
             functionRunning = false;
         }
         if (functionRunning) {
             return;
         }
-        functionRunning = true;
         Projectile projectile = projectileMoved.getProjectile();
         if (projectile.getId() != 55) {
             return;
@@ -152,11 +167,14 @@ public class AColdOneCloggingPlugin extends Plugin {
         if (!config.Balled()) {
             return;
         }
+        functionRunning = true;
         lastBalledTick = currentTick;
+        client.getLocalPlayer().setOverheadText("Oh no, i got balled");
         executorService.schedule(() -> {
             soundEngine.playClip(Sound.valueOf("Balled_1"));
-        }, 0, TimeUnit.SECONDS);
-        functionRunning = false;
+            sendScreenshot();
+            client.getLocalPlayer().setOverheadText("");
+        }, 1200, TimeUnit.MILLISECONDS);
     }
 
     public void SendMessage(String Message) {
@@ -168,7 +186,6 @@ public class AColdOneCloggingPlugin extends Plugin {
     public void LeoWiden() {
         final Timer timer = new Timer();
         long interval = 40;
-
         TimerTask task = new TimerTask() {
             int currentIndex = 0;
 
@@ -179,7 +196,6 @@ public class AColdOneCloggingPlugin extends Plugin {
                     wideLeoOverlay.setImage(image);
                     currentIndex++;
                 } else {
-                    // All iterations completed, cancel the timer
                     timer.cancel();
                     executorService.schedule(() -> {
                         overlayManager.remove(wideLeoOverlay);
@@ -190,12 +206,105 @@ public class AColdOneCloggingPlugin extends Plugin {
         timer.scheduleAtFixedRate(task, 0, interval);
     }
 
-    public void LeoWidenSetup() {
+    public void LeoSpin() {
+        final Timer timer = new Timer();
+        long interval = 40;
+
+        TimerTask task = new TimerTask() {
+            int currentIndex = 0;
+
+            @Override
+            public void run() {
+                if (currentIndex < leoSpinIcons.length * config.LoopAmount()) {
+                    String image = leoSpinIcons[currentIndex % leoSpinIcons.length];
+                    leoSpinOverlay.setImage(image);
+                    currentIndex++;
+                } else {
+                    timer.cancel();
+                    executorService.schedule(() -> {
+                        overlayManager.remove(leoSpinOverlay);
+                    }, 250, TimeUnit.MILLISECONDS);
+                }
+            }
+        };
+        timer.scheduleAtFixedRate(task, 0, interval);
+    }
+
+    public void OverlaysSetup() {
         for (int i = 0; i < 52; i++) {
             wideLeoIcons[i] = "/WideLeo/" + i + ".gif";
         }
+        for(int i = 0; i < 66; i++){
+            leoSpinIcons[i] = "/LeoSpin/" + i + ".gif";
+        }
     }
 
+
+    private void sendScreenshot()
+    {
+        String playerName = client.getLocalPlayer().getName();
+        String MessageString;
+        MessageString = String.format("%s %s", playerName, "got balled <:x0r6ztlurk:948329913734275093>");
+        DiscordWebhookBody discordWebhookBody = new DiscordWebhookBody();
+        discordWebhookBody.setContent(MessageString);
+
+        String webhookLink = "https://discord.com/api/webhooks/1155241231476080690/i6qyKOfzyumahm21Vt6ln5gXJQxmMKWZUwXH7AjSb3nCaxjxygrReTO87mobtP4I61T5";
+        HttpUrl url = HttpUrl.parse(webhookLink);
+        MultipartBody.Builder requestBodyBuilder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("payload_json", GSON.toJson(discordWebhookBody));
+
+        drawManager.requestNextFrameListener(image ->
+        {
+            BufferedImage bufferedImage = (BufferedImage) image;
+            byte[] imageBytes;
+            try
+            {
+                imageBytes = convertImageToByteArray(bufferedImage);
+            }
+            catch (IOException e)
+            {
+                log.warn("Error converting image to byte array", e);
+                return;
+            }
+
+            requestBodyBuilder.addFormDataPart("file", "image.png",
+                    RequestBody.create(MediaType.parse("image/png"), imageBytes));
+            buildRequestAndSend(url, requestBodyBuilder);
+        });
+    }
+
+
+    private void buildRequestAndSend(HttpUrl url, MultipartBody.Builder requestBodyBuilder)
+    {
+        RequestBody requestBody = requestBodyBuilder.build();
+        Request request = new Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build();
+
+        okHttpClient.newCall(request).enqueue(new Callback()
+        {
+            @Override
+            public void onFailure(Call call, IOException e)
+            {
+                log.debug("Error submitting webhook", e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException
+            {
+                response.close();
+            }
+        });
+    }
+
+    private static byte[] convertImageToByteArray(BufferedImage bufferedImage) throws IOException
+    {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, "png", byteArrayOutputStream);
+        return byteArrayOutputStream.toByteArray();
+    }
     @Provides
     AColdOneCloggingConfig provideConfig(ConfigManager configManager) {
         return configManager.getConfig(AColdOneCloggingConfig.class);

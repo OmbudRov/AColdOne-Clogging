@@ -6,14 +6,20 @@ import net.runelite.client.config.*;
 public interface AColdOneCloggingConfig extends Config
 {
 	@ConfigSection(
+			name = "Leo",
+			description = "Cause Leo and his emotes deserve their own section",
+			position = 1
+	)
+	String Leo="Leo";
+	@ConfigSection(
 			name = "Misc Sounds",
 			description = "Any Extra funny sounds that i may add",
-			position = 1
+			position = 2
 	)
 	String Misc="misc";
 	@Range(
 		min = 0,
-		max = 200
+		max = 10000
 	)
 	@ConfigItem(
 		keyName = "Volume",
@@ -51,16 +57,6 @@ public interface AColdOneCloggingConfig extends Config
 		return true;
 	}
 	@ConfigItem(
-			keyName = "WideLeo",
-			name = "Wide Leo Emote",
-			description = "Overlay the 7TV emote \"LeoWidenUp\" on the screen when saying \"!Leo\" ",
-			section = Misc
-	)
-	default boolean WideLeo()
-	{
-		return true;
-	}
-	@ConfigItem(
 			keyName = "Baron",
 			name = "Baron",
 			description = "Event for getting the best pet in the game",
@@ -69,5 +65,38 @@ public interface AColdOneCloggingConfig extends Config
 	default boolean Baron()
 	{
 		return true;
+	}
+	@ConfigItem(
+			keyName = "WideLeo",
+			name = "Wide Leo Emote",
+			description = "Overlay the 7TV emote \"LeoWidenUp\" on the screen when saying \"!Leo\" ",
+			position = 1,
+			section = Leo
+	)
+	default boolean WideLeo()
+	{
+		return true;
+	}
+	@ConfigItem(
+			keyName = "LeoSpin",
+			name = "Leo Spin Emote",
+			description = "Overlay the 7TV emote \"LeoSpin\" on the screen when saying \"!LeoSpin\" ",
+			position = 2,
+			section = Leo
+	)
+	default boolean LeoSpin()
+	{
+		return true;
+	}
+	@ConfigItem(
+			keyName = "LoopAmount",
+			name = "Loop Amount",
+			description = "Number of times to loop the gif on the screen when saying \"!LeoSpin\" ",
+			position = 3,
+			section = Leo
+	)
+	default int LoopAmount()
+	{
+		return 3;
 	}
 }

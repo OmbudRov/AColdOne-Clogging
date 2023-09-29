@@ -11,6 +11,7 @@ public enum Sound
 	CollectionLog_7("/Clogging_7.wav"),
 	CollectionLog_8("/Clogging_8.wav"),
 	CollectionLog_9("/Clogging_9.wav"),
+	CollectionLog_10("/Clogging_10.wav"),
 
 	Balled_1("/Balled_1.wav"),
 	Baron("/Baron.wav"),
