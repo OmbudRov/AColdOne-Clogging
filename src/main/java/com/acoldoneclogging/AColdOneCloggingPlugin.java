@@ -70,7 +70,7 @@ public class AColdOneCloggingPlugin extends Plugin {
 
     private int lastBalledTick = -1;
     private boolean functionRunning = false;
-    private final String[] wideLeoIcons = new String[52];
+    private final String[] wideLeoIcons = new String[59];
     private final String[] leoSpinIcons = new String[66];
 
 
@@ -233,7 +233,7 @@ public class AColdOneCloggingPlugin extends Plugin {
     }
 
     public void OverlaysSetup() {
-        for (int i = 0; i < 52; i++) {
+        for (int i = 0; i < 59; i++) {
             wideLeoIcons[i] = "/WideLeo/" + i + ".gif";
         }
         for(int i = 0; i < 66; i++){
