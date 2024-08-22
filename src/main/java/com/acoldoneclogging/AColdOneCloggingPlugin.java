@@ -58,15 +58,15 @@ public class AColdOneCloggingPlugin extends Plugin {
     private final WideLeoOverlay wideLeoOverlay = new WideLeoOverlay();
     private final LeoSpinOverlay leoSpinOverlay = new LeoSpinOverlay();
     private final DiscordWebhookBody discordWebhook = new DiscordWebhookBody();
-    private static final Pattern ClogRegex = Pattern.compile("New item added to your collection log:.*");
-    private static final Pattern TaskRegex = Pattern.compile("Congratulations, you've completed an? (?:\\w+) combat task:.*");
-    private static final Pattern BaronRegex = Pattern.compile("New item added to your collection log: Baron");
-    private static final Set<Integer> BadClogSettings = new HashSet<>() {{
+    private static final Pattern clogRegex = Pattern.compile("New item added to your collection log:.*");
+    private static final Pattern taskRegex = Pattern.compile("Congratulations, you've completed an? (?:\\w+) combat task:.*");
+    private static final Pattern baronRegex = Pattern.compile("New item added to your collection log: Baron");
+    private static final Set<Integer> badClogSettings = new HashSet<>() {{
         add(0);
         add(2);
     }};
 
-    private int LastClogWarning = -1;
+    private int lastClogWarning = -1;
 
     private int lastBalledTick = -1;
     private boolean functionRunning = false;
@@ -76,7 +76,7 @@ public class AColdOneCloggingPlugin extends Plugin {
 
     @Override
     protected void startUp() throws Exception {
-        OverlaysSetup();
+        overlaysSetup();
     }
 
     @Override
@@ -91,7 +91,7 @@ public class AColdOneCloggingPlugin extends Plugin {
             case LOGGING_IN:
             case HOPPING:
             case CONNECTION_LOST:
-                LastClogWarning = client.getTickCount();
+                lastClogWarning = client.getTickCount();
                 break;
             case LOGGED_IN:
                 break;
@@ -108,29 +108,29 @@ public class AColdOneCloggingPlugin extends Plugin {
                 LeoWiden();
             } else if (config.LeoSpin() && Message.equalsIgnoreCase("!LeoSpin") && isUser) {
                 overlayManager.add(leoSpinOverlay);
-                LeoSpin();
+                leoSpin();
             }
 
         }
         if (chatMessage.getType() == ChatMessageType.GAMEMESSAGE) {
             String Message = chatMessage.getMessage();
-            if (config.Baron() && BaronRegex.matcher(chatMessage.getMessage()).matches()) {
+            if (config.Baron() && baronRegex.matcher(chatMessage.getMessage()).matches()) {
                 soundEngine.playClip(Sound.Baron);
-            } else if (config.AnnounceClog() && ClogRegex.matcher(Message).matches()) {
+            } else if (config.AnnounceClog() && clogRegex.matcher(Message).matches()) {
                 Random random = new Random();
-                int logNumber = random.nextInt(10) + 1;
+                int logNumber = random.nextInt(14) + 1;
                 Sound selectedLog = Sound.valueOf("CollectionLog_" + logNumber);
                 soundEngine.playClip(selectedLog);
-            } else if (config.AnnounceCombatTasks() && TaskRegex.matcher(Message).matches()) {
+            } else if (config.AnnounceCombatTasks() && taskRegex.matcher(Message).matches()) {
                 soundEngine.playClip(Sound.valueOf("TaskCompletion"));
             }
         }
     }
 
     private void WarnForClogSettings(int newVarbitValue) {
-        if (BadClogSettings.contains(newVarbitValue)) {
-            if (LastClogWarning == -1 || client.getTickCount() - LastClogWarning > 10) {
-                LastClogWarning = client.getTickCount();
+        if (badClogSettings.contains(newVarbitValue)) {
+            if (lastClogWarning == -1 || client.getTickCount() - lastClogWarning > 10) {
+                lastClogWarning = client.getTickCount();
                 SendMessage("Please enable \"Collection log - New addition notification\" in your game settings or switch off the \"AColdOne Clogging\" plugin to switch off this warning");
             }
         }
@@ -156,12 +156,12 @@ public class AColdOneCloggingPlugin extends Plugin {
         if (projectile.getId() != 55) {
             return;
         }
-        Actor Me = client.getLocalPlayer();
-        if (Me == null) {
+        Actor me = client.getLocalPlayer();
+        if (me == null) {
             return;
         }
         Actor projectileInteraction = projectile.getInteracting();
-        if (!Me.equals(projectileInteraction)) {
+        if (!me.equals(projectileInteraction)) {
             return;
         }
         if (!config.Balled()) {
@@ -169,20 +169,20 @@ public class AColdOneCloggingPlugin extends Plugin {
         }
         functionRunning = true;
         lastBalledTick = currentTick;
-        client.getLocalPlayer().setOverheadText("Oh no, i got balled");
+        me.setOverheadText("Oh no, i got balled");
         executorService.schedule(() -> {
             soundEngine.playClip(Sound.valueOf("Balled_1"));
             if (config.BalledScreenshot() && config.WebhookLink()!=null) {
-                sendScreenshot();
+                sendScreenshot(me.getName());
             }
             client.getLocalPlayer().setOverheadText("");
         }, 1200, TimeUnit.MILLISECONDS);
     }
 
     public void SendMessage(String Message) {
-        String HighlightedMessage = new ChatMessageBuilder().append(ChatColorType.HIGHLIGHT).append(Message).build();
+        String highlightedMessage = new ChatMessageBuilder().append(ChatColorType.HIGHLIGHT).append(Message).build();
 
-        chatMessageManager.queue(QueuedMessage.builder().type(ChatMessageType.CONSOLE).runeLiteFormattedMessage(HighlightedMessage).build());
+        chatMessageManager.queue(QueuedMessage.builder().type(ChatMessageType.CONSOLE).runeLiteFormattedMessage(highlightedMessage).build());
     }
 
     public void LeoWiden() {
@@ -208,7 +208,7 @@ public class AColdOneCloggingPlugin extends Plugin {
         timer.scheduleAtFixedRate(task, 0, interval);
     }
 
-    public void LeoSpin() {
+    public void leoSpin() {
         final Timer timer = new Timer();
         long interval = 40;
 
@@ -232,7 +232,7 @@ public class AColdOneCloggingPlugin extends Plugin {
         timer.scheduleAtFixedRate(task, 0, interval);
     }
 
-    public void OverlaysSetup() {
+    public void overlaysSetup() {
         for (int i = 0; i < 52; i++) {
             wideLeoIcons[i] = "/WideLeo/" + i + ".gif";
         }
@@ -242,9 +242,8 @@ public class AColdOneCloggingPlugin extends Plugin {
     }
 
 
-    private void sendScreenshot()
+    private void sendScreenshot(String playerName)
     {
-        String playerName = client.getLocalPlayer().getName();
         String MessageString;
         MessageString = String.format("%s %s", playerName, "got balled <:x0r6ztlurk:948329913734275093>");
         DiscordWebhookBody discordWebhookBody = new DiscordWebhookBody();
