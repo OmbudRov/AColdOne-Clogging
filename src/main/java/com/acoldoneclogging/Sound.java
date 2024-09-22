@@ -12,10 +12,16 @@ public enum Sound
 	CollectionLog_8("/Clogging_8.wav"),
 	CollectionLog_9("/Clogging_9.wav"),
 	CollectionLog_10("/Clogging_10.wav"),
+	CollectionLog_11("/Clogging_11.wav"),
+	CollectionLog_12("/Clogging_12.wav"),
+	CollectionLog_13("/Clogging_13.wav"),
+	CollectionLog_14("/Clogging_14.wav"),
 
 	Balled_1("/Balled_1.wav"),
-	Baron("/Baron.wav"),
-	TaskCompletion("/TaskCompletion.wav");
+
+	TaskCompletion_1("/TaskCompletion_1.wav"),
+	TaskCompletion_2("/TaskCompletion_2.wav"),
+	TaskCompletion_3("/TaskCompletion_3.wav");
 	private final String ResourceName;
 
 	Sound(String resName)

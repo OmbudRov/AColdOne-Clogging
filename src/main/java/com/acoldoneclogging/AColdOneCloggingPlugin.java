@@ -57,10 +57,8 @@ public class AColdOneCloggingPlugin extends Plugin {
 
     private final WideLeoOverlay wideLeoOverlay = new WideLeoOverlay();
     private final LeoSpinOverlay leoSpinOverlay = new LeoSpinOverlay();
-    private final DiscordWebhookBody discordWebhook = new DiscordWebhookBody();
     private static final Pattern clogRegex = Pattern.compile("New item added to your collection log:.*");
     private static final Pattern taskRegex = Pattern.compile("Congratulations, you've completed an? (?:\\w+) combat task:.*");
-    private static final Pattern baronRegex = Pattern.compile("New item added to your collection log: Baron");
     private static final Set<Integer> badClogSettings = new HashSet<>() {{
         add(0);
         add(2);
@@ -72,6 +70,7 @@ public class AColdOneCloggingPlugin extends Plugin {
     private boolean functionRunning = false;
     private final String[] wideLeoIcons = new String[59];
     private final String[] leoSpinIcons = new String[66];
+	private final Random random = new Random();
 
 
     @Override
@@ -112,17 +111,14 @@ public class AColdOneCloggingPlugin extends Plugin {
             }
 
         }
-        if (chatMessage.getType() == ChatMessageType.GAMEMESSAGE) {
+        else if (chatMessage.getType() == ChatMessageType.GAMEMESSAGE) {
             String Message = chatMessage.getMessage();
-            if (config.Baron() && baronRegex.matcher(chatMessage.getMessage()).matches()) {
-                soundEngine.playClip(Sound.Baron);
-            } else if (config.AnnounceClog() && clogRegex.matcher(Message).matches()) {
-                Random random = new Random();
-                int logNumber = random.nextInt(14) + 1;
-                Sound selectedLog = Sound.valueOf("CollectionLog_" + logNumber);
+            if (config.AnnounceClog() && clogRegex.matcher(Message).matches()) {
+                Sound selectedLog = Sound.valueOf("CollectionLog_" + (random.nextInt(14) + 1));
                 soundEngine.playClip(selectedLog);
             } else if (config.AnnounceCombatTasks() && taskRegex.matcher(Message).matches()) {
-                soundEngine.playClip(Sound.valueOf("TaskCompletion"));
+				Sound selectedLog = Sound.valueOf("TaskCompletion_" + (random.nextInt(3) + 1));
+				soundEngine.playClip(selectedLog);
             }
         }
     }
