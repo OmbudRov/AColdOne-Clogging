@@ -75,16 +75,6 @@ public interface AColdOneCloggingConfig extends Config
 	)
 	default String WebhookLink() { return "";}
 	@ConfigItem(
-			keyName = "Baron",
-			name = "Baron",
-			description = "Event for getting the best pet in the game",
-			section = Misc
-	)
-	default boolean Baron()
-	{
-		return true;
-	}
-	@ConfigItem(
 			keyName = "WideLeo",
 			name = "Wide Leo Emote",
 			description = "Overlay the 7TV emote \"LeoWidenUp\" on the screen when saying \"!Leo\" ",
