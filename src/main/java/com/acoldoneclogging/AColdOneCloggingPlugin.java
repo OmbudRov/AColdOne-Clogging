@@ -59,6 +59,14 @@ public class AColdOneCloggingPlugin extends Plugin {
     private final LeoSpinOverlay leoSpinOverlay = new LeoSpinOverlay();
     private static final Pattern clogRegex = Pattern.compile("New item added to your collection log:.*");
     private static final Pattern taskRegex = Pattern.compile("Congratulations, you've completed an? (?:\\w+) combat task:.*");
+
+	private static final Set<String> leaguesTaskMessages = new HashSet<>(){{
+		add("Congratulations, you've completed an easy task:");
+		add("Congratulations, you've completed a medium task:");
+		add("Congratulations, you've completed a hard task:");
+		add("Congratulations, you've completed an elite task:");
+		add("Congratulations, you've completed a master task:");
+	}};
     private static final Set<Integer> badClogSettings = new HashSet<>() {{
         add(0);
         add(2);
@@ -116,14 +124,31 @@ public class AColdOneCloggingPlugin extends Plugin {
             if (config.AnnounceClog() && clogRegex.matcher(Message).matches()) {
                 Sound selectedLog = Sound.valueOf("CollectionLog_" + (random.nextInt(14) + 1));
                 soundEngine.playClip(selectedLog);
-            } else if (config.AnnounceCombatTasks() && taskRegex.matcher(Message).matches()) {
+            } else if (config.AnnounceLeaguesTasks() && isLeaguesTask(Message))
+			{
+				Sound selectedLog = Sound.valueOf("leaguesTask_" + (random.nextInt(3) + 1));
+				soundEngine.playClip(selectedLog);
+			}
+			else if (config.AnnounceCombatTasks() && taskRegex.matcher(Message).matches()) {
 				Sound selectedLog = Sound.valueOf("TaskCompletion_" + (random.nextInt(3) + 1));
 				soundEngine.playClip(selectedLog);
             }
         }
     }
 
-    private void WarnForClogSettings(int newVarbitValue) {
+	private boolean isLeaguesTask(String message)
+	{
+		for(String S : leaguesTaskMessages)
+		{
+			if (message.contains(S))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void WarnForClogSettings(int newVarbitValue) {
         if (badClogSettings.contains(newVarbitValue)) {
             if (lastClogWarning == -1 || client.getTickCount() - lastClogWarning > 10) {
                 lastClogWarning = client.getTickCount();

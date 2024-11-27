@@ -46,6 +46,16 @@ public interface AColdOneCloggingConfig extends Config
 	default boolean AnnounceCombatTasks(){
 		return true;
 	}
+
+	@ConfigItem(
+		keyName = "AnnounceLeaguesTasks",
+		name = "Leagues Tasks",
+		description = "Announces Leagues Task Completions with an Audio Clip"
+	)
+	default boolean AnnounceLeaguesTasks(){
+		return true;
+	}
+
 	@ConfigItem(
 			keyName = "Balled",
 			name = "Getting Balled",

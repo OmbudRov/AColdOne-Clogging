@@ -21,7 +21,12 @@ public enum Sound
 
 	TaskCompletion_1("/TaskCompletion_1.wav"),
 	TaskCompletion_2("/TaskCompletion_2.wav"),
-	TaskCompletion_3("/TaskCompletion_3.wav");
+	TaskCompletion_3("/TaskCompletion_3.wav"),
+
+	LeaguesTask_1("/LeaguesTask_1.wav"),
+	LeaguesTask_2("/LeaguesTask_2.wav"),
+	LeaguesTask_3("/LeaguesTask_3.wav");
+
 	private final String ResourceName;
 
 	Sound(String resName)
