@@ -126,7 +126,7 @@ public class AColdOneCloggingPlugin extends Plugin {
                 soundEngine.playClip(selectedLog);
             } else if (config.AnnounceLeaguesTasks() && isLeaguesTask(Message))
 			{
-				Sound selectedLog = Sound.valueOf("leaguesTask_" + (random.nextInt(3) + 1));
+				Sound selectedLog = Sound.valueOf("LeaguesTask_" + (random.nextInt(3) + 1));
 				soundEngine.playClip(selectedLog);
 			}
 			else if (config.AnnounceCombatTasks() && taskRegex.matcher(Message).matches()) {
