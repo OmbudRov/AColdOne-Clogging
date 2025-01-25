@@ -5,6 +5,7 @@ import com.acoldoneclogging.Overlays.WideLeoOverlay;
 import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
+import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.ProjectileMoved;
@@ -59,7 +60,8 @@ public class AColdOneCloggingPlugin extends Plugin {
     private final LeoSpinOverlay leoSpinOverlay = new LeoSpinOverlay();
     private static final Pattern clogRegex = Pattern.compile("New item added to your collection log:.*");
 	private static final Pattern taskRegex = Pattern.compile("Congratulations, you've completed an? (?:\\w+) combat task:.*");
-	private static final Pattern leaguesTaskRegex = Pattern.compile("Congratulations, you've completed an? \\w+ task:.*");
+	private static final Pattern KEBAB = Pattern.compile("Your reward is:*Kebab*");
+	//private static final Pattern leaguesTaskRegex = Pattern.compile("Congratulations, you've completed an? \\w+ task:.*");
 
     private static final Set<Integer> badClogSettings = new HashSet<>() {{
         add(0);
@@ -116,18 +118,24 @@ public class AColdOneCloggingPlugin extends Plugin {
         else if (chatMessage.getType() == ChatMessageType.GAMEMESSAGE) {
             String Message = chatMessage.getMessage();
             if (config.AnnounceClog() && clogRegex.matcher(Message).matches()) {
-                Sound selectedLog = Sound.valueOf("CollectionLog_" + (random.nextInt(14) + 1));
+                Sound selectedLog = Sound.valueOf("CollectionLog_" + (random.nextInt(16) + 1));
                 soundEngine.playClip(selectedLog);
-            } else if (config.AnnounceLeaguesTasks() && leaguesTaskRegex.matcher(Message).matches())
-			{
-				Sound selectedLog = Sound.valueOf("LeaguesTask_" + (random.nextInt(3) + 1));
-				soundEngine.playClip(selectedLog);
-			}
+            }
+//			Leagues Hijinks
+//			else if (config.AnnounceLeaguesTasks() && leaguesTaskRegex.matcher(Message).matches())
+//			{
+//				Sound selectedLog = Sound.valueOf("LeaguesTask_" + (random.nextInt(3) + 1));
+//				soundEngine.playClip(selectedLog);
+//			}
 			else if (config.AnnounceCombatTasks() && taskRegex.matcher(Message).matches()) {
 				Sound selectedLog = Sound.valueOf("TaskCompletion_" + (random.nextInt(3) + 1));
 				soundEngine.playClip(selectedLog);
             }
-        }
+			else if (config.KEBAB() && KEBAB.matcher(Message).matches())
+			{
+				soundEngine.playClip(Sound.valueOf("KEBAB"));
+			}
+		}
     }
 
 	private void WarnForClogSettings(int newVarbitValue) {
@@ -181,6 +189,16 @@ public class AColdOneCloggingPlugin extends Plugin {
             client.getLocalPlayer().setOverheadText("");
         }, 1200, TimeUnit.MILLISECONDS);
     }
+
+	@Subscribe
+	public void onActorDeath(ActorDeath actorDeath){
+		if (actorDeath.getActor() != client.getLocalPlayer())
+			return;
+		if(config.AnnounceDeath())
+		{
+			soundEngine.playClip(Sound.valueOf("Death"));
+		}
+	}
 
     public void SendMessage(String Message) {
         String highlightedMessage = new ChatMessageBuilder().append(ChatColorType.HIGHLIGHT).append(Message).build();
@@ -309,6 +327,7 @@ public class AColdOneCloggingPlugin extends Plugin {
         ImageIO.write(bufferedImage, "png", byteArrayOutputStream);
         return byteArrayOutputStream.toByteArray();
     }
+
     @Provides
     AColdOneCloggingConfig provideConfig(ConfigManager configManager) {
         return configManager.getConfig(AColdOneCloggingConfig.class);

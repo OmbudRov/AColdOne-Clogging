@@ -16,6 +16,8 @@ public enum Sound
 	CollectionLog_12("/Clogging_12.wav"),
 	CollectionLog_13("/Clogging_13.wav"),
 	CollectionLog_14("/Clogging_14.wav"),
+	CollectionLog_15("/Clogging_15.wav"),
+	CollectionLog_16("/Clogging_16.wav"),
 
 	Balled_1("/Balled_1.wav"),
 
@@ -23,9 +25,12 @@ public enum Sound
 	TaskCompletion_2("/TaskCompletion_2.wav"),
 	TaskCompletion_3("/TaskCompletion_3.wav"),
 
-	LeaguesTask_1("/LeaguesTask_1.wav"),
-	LeaguesTask_2("/LeaguesTask_2.wav"),
-	LeaguesTask_3("/LeaguesTask_3.wav");
+//	LeaguesTask_1("/LeaguesTask_1.wav"),
+//	LeaguesTask_2("/LeaguesTask_2.wav"),
+//	LeaguesTask_3("/LeaguesTask_3.wav"),
+
+	Death("/Death.wav"),
+	KEBAB("/KEBAB.wav");
 
 	private final String ResourceName;
 
