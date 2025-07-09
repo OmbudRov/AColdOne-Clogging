@@ -54,7 +54,6 @@ public class AColdOneCloggingPlugin extends Plugin {
 
     @Override
     protected void shutDown() throws Exception {
-        soundEngine.close();
 		eventBus.unregister(audioTriggers);
 		eventBus.unregister(balledLOL);
 		eventBus.unregister(gifOverlays);
