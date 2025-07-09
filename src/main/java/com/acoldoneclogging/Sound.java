@@ -15,9 +15,9 @@ public enum Sound
 	CollectionLog_11("/Clogging_11.wav"),
 	CollectionLog_12("/Clogging_12.wav"),
 	CollectionLog_13("/Clogging_13.wav"),
-	CollectionLog_14("/Clogging_14.wav"),
-	CollectionLog_15("/Clogging_15.wav"),
-	CollectionLog_16("/Clogging_16.wav"),
+//	CollectionLog_14("/Clogging_14.wav"),
+//	CollectionLog_15("/Clogging_15.wav"),
+//	CollectionLog_16("/Clogging_16.wav"),
 
 	Balled_1("/Balled_1.wav"),
 

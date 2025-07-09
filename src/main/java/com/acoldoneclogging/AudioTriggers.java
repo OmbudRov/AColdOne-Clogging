@@ -38,7 +38,7 @@ public class AudioTriggers
 			String Message = chatMessage.getMessage();
 			if (config.AnnounceClog() && clogRegex.matcher(Message).matches())
 			{
-				Sound selectedLog = Sound.valueOf("CollectionLog_" + (random.nextInt(16) + 1));
+				Sound selectedLog = Sound.valueOf("CollectionLog_" + (random.nextInt(13) + 1));
 				soundEngine.playClip(selectedLog);
 			}
 //			Leagues Hijinks
