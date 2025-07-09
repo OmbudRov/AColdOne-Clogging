@@ -36,9 +36,9 @@ public enum Sound
 
 	Sound(String resName)
 	{
-		ResourceName=resName;
-
+		ResourceName = resName;
 	}
+
 	String getResourceName()
 	{
 		return ResourceName;

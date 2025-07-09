@@ -19,40 +19,53 @@ public class SoundEngine
 	private long lastClipMTime = CLIP_MTIME_UNLOADED;
 	private Clip clip = null;
 
-	private boolean loadClip(Sound sound) {
-		try (InputStream resourceStream = SoundEngine.class.getResourceAsStream(sound.getResourceName())) {
-			if (resourceStream == null) {
-				log.warn("Failed to load sound " + sound + " as resource stream was null!");
-			} else {
-				try (InputStream fileStream = new BufferedInputStream(resourceStream);
-					 AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(fileStream)) {
-					clip.open(audioInputStream); // liable to error with pulseaudio, works on windows, no clue about mac
+	private boolean loadClip(Sound sound)
+	{
+		try (InputStream resourceStream = SoundEngine.class.getResourceAsStream(sound.getResourceName()))
+		{
+			if (resourceStream == null)
+			{
+				log.warn("Failed to load sound {} as resource stream was null!", sound);
+			}
+			else
+			{
+				try (InputStream fileStream = new BufferedInputStream(resourceStream); AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(fileStream))
+				{
+					clip.open(audioInputStream);
 				}
 				return true;
 			}
-		} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-			log.warn("Failed to load sound " + sound, e);
+		}
+		catch (UnsupportedAudioFileException | IOException | LineUnavailableException e)
+		{
+			log.warn("Failed to load sound {}", sound, e);
 		}
 		return false;
 	}
 
-	public void playClip(Sound sound) {
+	public void playClip(Sound sound)
+	{
 		long currentMTime = System.currentTimeMillis();
-		if (clip == null || currentMTime != lastClipMTime || !clip.isOpen()) {
-			if (clip != null && clip.isOpen()) {
+		if (clip == null || currentMTime != lastClipMTime || !clip.isOpen())
+		{
+			if (clip != null && clip.isOpen())
+			{
 				clip.close();
 			}
-
-			try {
+			try
+			{
 				clip = AudioSystem.getClip();
-			} catch (LineUnavailableException e) {
+			}
+			catch (LineUnavailableException e)
+			{
 				lastClipMTime = CLIP_MTIME_UNLOADED;
-				log.warn("Failed to get clip for C Engineer sound " + sound, e);
+				log.warn("Failed to get clip for sound {}", sound, e);
 				return;
 			}
 
 			lastClipMTime = currentMTime;
-			if (!loadClip(sound)) {
+			if (!loadClip(sound))
+			{
 				return;
 			}
 		}
@@ -73,7 +86,7 @@ public class SoundEngine
 
 	public void close()
 	{
-		if(clip!=null && clip.isOpen())
+		if (clip != null && clip.isOpen())
 		{
 			clip.close();
 		}
