@@ -3,12 +3,14 @@ package com.acoldoneclogging;
 import java.util.Random;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.client.eventbus.Subscribe;
 
+@Slf4j
 public class AudioTriggers
 {
 	@Inject
@@ -20,7 +22,7 @@ public class AudioTriggers
 
 
 	private static final Pattern clogRegex = Pattern.compile("New item added to your collection log:.*");
-	private static final Pattern taskRegex = Pattern.compile("Congratulations, you've completed an? (?:\\w+) combat task:.*");
+	private static final Pattern taskRegex = Pattern.compile("CA_ID:\\d+\\|Congratulations, you've completed an? \\w+ combat task:.*");
 	private static final Pattern KEBAB = Pattern.compile("Your reward*Kebab*");
 	//private static final Pattern leaguesTaskRegex = Pattern.compile("Congratulations, you've completed an? \\w+ task:.*");
 
