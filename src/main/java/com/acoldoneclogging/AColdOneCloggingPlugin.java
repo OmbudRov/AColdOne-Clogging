@@ -2,6 +2,8 @@ package com.acoldoneclogging;
 
 
 import com.acoldoneclogging.Overlays.GIFTriggers;
+import com.acoldoneclogging.Sounds.ClipManager;
+import com.acoldoneclogging.Sounds.SoundEngine;
 import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
@@ -13,6 +15,7 @@ import net.runelite.client.ui.overlay.OverlayManager;
 
 import javax.inject.Inject;
 import java.util.concurrent.ScheduledExecutorService;
+import okhttp3.OkHttpClient;
 
 @Slf4j
 @PluginDescriptor(name = "AColdOne Clogging")
@@ -34,6 +37,8 @@ public class AColdOneCloggingPlugin extends Plugin {
     private SoundEngine soundEngine;
 	@Inject
     private ScheduledExecutorService executorService;
+	@Inject
+	private OkHttpClient okHttpClient;
     @Inject
     private OverlayManager overlayManager;
 
@@ -50,6 +55,7 @@ public class AColdOneCloggingPlugin extends Plugin {
 		eventBus.register(balledLOL); //Getting balled lol
 		eventBus.register(gifOverlays); //Leo and Sky GIFs
 		gifOverlays.initialise();
+		executorService.submit(() -> ClipManager.filePrep(okHttpClient));
     }
 
     @Override

@@ -1,7 +1,6 @@
-package com.acoldoneclogging;
+package com.acoldoneclogging.Sounds;
 
-import java.io.BufferedInputStream;
-import java.io.InputStream;
+import com.acoldoneclogging.AColdOneCloggingConfig;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
@@ -21,15 +20,12 @@ public class SoundEngine
 		float gain = 20f * (float) Math.log10(config.Volume() / 100f);
 		try
 		{
-			InputStream resourceStream = SoundEngine.class.getResourceAsStream(sound.getResourceName());
-			InputStream fileStream = new BufferedInputStream(resourceStream);
-			audioPlayer.play(fileStream,gain);
+
+			audioPlayer.play(ClipManager.getClip(sound),gain);
 		}
 		catch (Exception e)
 		{
 			log.info("Error Playing Clip: {}", sound,e);
 		}
 	}
-
-
 }

@@ -53,14 +53,14 @@ public interface AColdOneCloggingConfig extends Config
 		return true;
 	}
 
-//	@ConfigItem(
-//		keyName = "AnnounceLeaguesTasks",
-//		name = "Leagues Tasks",
-//		description = "Announces Leagues Task Completions with an Audio Clip"
-//	)
-//	default boolean AnnounceLeaguesTasks(){
-//		return true;
-//	}
+	@ConfigItem(
+		keyName = "AnnounceLeaguesTasks",
+		name = "Leagues Tasks",
+		description = "Announces Leagues Task Completions with an Audio Clip"
+	)
+	default boolean AnnounceLeaguesTasks(){
+		return true;
+	}
 
 	@ConfigItem(
 		keyName = "AnnounceDeath",
@@ -68,16 +68,6 @@ public interface AColdOneCloggingConfig extends Config
 		description = "Announces Deaths with an Audio Clip"
 	)
 	default boolean AnnounceDeath()
-	{
-		return true;
-	}
-
-	@ConfigItem(
-		keyName = "KEBAB",
-		name = "Kebab Drops",
-		description = "Celebrate Kebab drops with an Audio Clip"
-	)
-	default boolean KEBAB()
 	{
 		return true;
 	}

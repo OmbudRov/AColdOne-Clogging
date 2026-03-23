@@ -1,5 +1,7 @@
 package com.acoldoneclogging;
 
+import com.acoldoneclogging.Sounds.Sound;
+import com.acoldoneclogging.Sounds.SoundEngine;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

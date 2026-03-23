@@ -1,13 +1,16 @@
 package com.acoldoneclogging.Overlays;
 
 import com.acoldoneclogging.AColdOneCloggingConfig;
+
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
@@ -32,16 +35,20 @@ public class GIFTriggers extends OverlayPanel
 
 	private final GIFOverlay skyArriveOverlay = new GIFOverlay("/gottaGo/175.gif");
 	private final GIFOverlay gottaGoOverlay = new GIFOverlay("/gottaGo/0.gif");
+	private final GIFOverlay skySqueezeOverlay = new GIFOverlay("/skySqueeze/0.gif");
 
 	private final GIFOverlay leoSpinOverlay = new GIFOverlay("/leoSpin/0.gif");
 	private final GIFOverlay wideLeoOverlay = new GIFOverlay("/wideLeo/0.gif");
+	private final GIFOverlay leoSqueezeOverlay = new GIFOverlay("/leoSqueeze/0.gif");
 
 	//Leo GIFs
 	private final String[] wideLeoIcons = new String[59];
 	private final String[] leoSpinIcons = new String[66];
+	private final String[] leoSqueezeIcons = new String[110];
 
 	//Sky GIFs
 	private final String[] gottaGoIcons = new String[175];
+	private final String[] skySqueezeIcons = new String[80];
 
 	public void initialise()
 	{
@@ -52,8 +59,11 @@ public class GIFTriggers extends OverlayPanel
 	{
 		overlayManager.remove(skyArriveOverlay);
 		overlayManager.remove(gottaGoOverlay);
+		overlayManager.remove(skySqueezeOverlay);
+		overlayManager.remove(skySqueezeOverlay);
 		overlayManager.remove(wideLeoOverlay);
 		overlayManager.remove(leoSpinOverlay);
+		overlayManager.remove(leoSqueezeOverlay);
 	}
 
 	@Subscribe
@@ -70,6 +80,10 @@ public class GIFTriggers extends OverlayPanel
 			{
 				playGIF("gottaGo");
 			}
+			else if (config.skyEmotes() && message.equalsIgnoreCase("!skySqueeze"))
+			{
+				playGIF("skySqueeze");
+			}
 			else if (config.leoEmotes() && message.equalsIgnoreCase("!wideLeo"))
 			{
 				playGIF("wideLeo");
@@ -78,7 +92,10 @@ public class GIFTriggers extends OverlayPanel
 			{
 				playGIF("leoSpin");
 			}
-
+			else if (config.leoEmotes() && message.equalsIgnoreCase("!leoSqueeze"))
+			{
+				playGIF("leoSqueeze");
+			}
 		}
 	}
 
@@ -93,10 +110,20 @@ public class GIFTriggers extends OverlayPanel
 		{
 			leoSpinIcons[i] = "/leoSpin/" + i + ".gif";
 		}
+		for (int i = 0; i < 110; i++)
+		{
+			leoSqueezeIcons[i] = "/leoSqueeze/" + (i % 21) + ".gif";
+		}
+
 		for (int i = 0; i < 175; i++)
 		{
 			gottaGoIcons[i] = "/gottaGo/" + i + ".gif";
 		}
+		for (int i = 0; i < 80; i++)
+		{
+			skySqueezeIcons[i] = "/skySqueeze/" + (i % 7) + ".gif";
+		}
+
 	}
 
 	private void playGIF(String emoteName)
@@ -109,11 +136,17 @@ public class GIFTriggers extends OverlayPanel
 			case "gottaGo":
 				gifPlayer(gottaGoOverlay, gottaGoIcons, 30, FALSE);
 				break;
+			case "skySqueeze":
+				gifPlayer(skySqueezeOverlay, skySqueezeIcons, 80, FALSE);
+				break;
 			case "wideLeo":
 				gifPlayer(wideLeoOverlay, wideLeoIcons, 40, FALSE);
 				break;
 			case "leoSpin":
 				gifPlayer(leoSpinOverlay, leoSpinIcons, 40, FALSE);
+				break;
+			case "leoSqueeze":
+				gifPlayer(leoSqueezeOverlay, leoSqueezeIcons, 80, FALSE);
 				break;
 		}
 	}

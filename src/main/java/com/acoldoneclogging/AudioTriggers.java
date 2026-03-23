@@ -1,5 +1,7 @@
 package com.acoldoneclogging;
 
+import com.acoldoneclogging.Sounds.Sound;
+import com.acoldoneclogging.Sounds.SoundEngine;
 import java.util.Random;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
@@ -21,8 +23,7 @@ public class AudioTriggers
 
 	private static final Pattern clogRegex = Pattern.compile("New item added to your collection log:.*");
 	private static final Pattern taskRegex = Pattern.compile("CA_ID:\\d+\\|Congratulations, you've completed an? \\w+ combat task:.*");
-	private static final Pattern KEBAB = Pattern.compile("Your reward*Kebab*");
-	//private static final Pattern leaguesTaskRegex = Pattern.compile("Congratulations, you've completed an? \\w+ task:.*");
+	private static final Pattern leaguesTaskRegex = Pattern.compile("Congratulations, you've completed an? \\w+ task:.*");
 
 	private final Random random = new Random();
 
@@ -42,19 +43,15 @@ public class AudioTriggers
 				soundEngine.playClip(selectedLog);
 			}
 //			Leagues Hijinks
-//			else if (config.AnnounceLeaguesTasks() && leaguesTaskRegex.matcher(Message).matches())
-//			{
-//				Sound selectedLog = Sound.valueOf("LeaguesTask_" + (random.nextInt(3) + 1));
-//				soundEngine.playClip(selectedLog);
-//			}
+			else if (config.AnnounceLeaguesTasks() && leaguesTaskRegex.matcher(Message).matches())
+			{
+				Sound selectedLog = Sound.valueOf("LeaguesTask_" + (random.nextInt(7) + 1));
+				soundEngine.playClip(selectedLog);
+			}
 			else if (config.AnnounceCombatTasks() && taskRegex.matcher(Message).matches())
 			{
 				Sound selectedLog = Sound.valueOf("TaskCompletion_" + (random.nextInt(3) + 1));
 				soundEngine.playClip(selectedLog);
-			}
-			else if (config.KEBAB() && KEBAB.matcher(Message).matches())
-			{
-				soundEngine.playClip(Sound.valueOf("KEBAB"));
 			}
 		}
 	}
