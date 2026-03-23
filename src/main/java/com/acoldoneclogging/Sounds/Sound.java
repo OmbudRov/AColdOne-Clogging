@@ -24,13 +24,13 @@ public enum Sound
 	TaskCompletion_2("TaskCompletion_2.wav"),
 	TaskCompletion_3("TaskCompletion_3.wav"),
 
-	LeaguesTask_1("/LeaguesTask_1.wav"),
-	LeaguesTask_2("/LeaguesTask_2.wav"),
-	LeaguesTask_3("/LeaguesTask_3.wav"),
-	LeaguesTask_4("/LeaguesTask_4.wav"),
-	LeaguesTask_5("/LeaguesTask_5.wav"),
-	LeaguesTask_6("/LeaguesTask_6.wav"),
-	LeaguesTask_7("/LeaguesTask_7.wav"),
+	LeaguesTask_1("LeaguesTask_1.wav"),
+	LeaguesTask_2("LeaguesTask_2.wav"),
+	LeaguesTask_3("LeaguesTask_3.wav"),
+	LeaguesTask_4("LeaguesTask_4.wav"),
+	LeaguesTask_5("LeaguesTask_5.wav"),
+	LeaguesTask_6("LeaguesTask_6.wav"),
+	LeaguesTask_7("LeaguesTask_7.wav"),
 
 	Death("Death.wav");
 
