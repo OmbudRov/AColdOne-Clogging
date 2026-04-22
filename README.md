@@ -23,3 +23,4 @@ Explicit Permission from the Big Man Himself:
 ![image](https://github.com/OmbudRov/AColdOne-Clogging/assets/66506616/485b75e8-f7a5-42e0-8352-f865b21153ab)
 ![image](https://github.com/OmbudRov/AColdOne-Clogging/assets/66506616/c4c4ae05-bef4-4587-a647-765878eebc75)
 ![image](https://github.com/user-attachments/assets/d14faa09-95d8-44b3-a28c-5aa8322ac71c)
+<img width="626" height="165" alt="image" src="https://github.com/user-attachments/assets/f597658d-440e-4680-bea5-6aa063df9acb" />
