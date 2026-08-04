@@ -20,8 +20,7 @@ public interface AColdOneCloggingConfig extends Config
 	String Misc = "misc";
 
 	@Range(
-		min = 0,
-		max = 100
+            max = 100
 	)
 	@ConfigItem(
 		keyName = "Volume",
@@ -53,14 +52,14 @@ public interface AColdOneCloggingConfig extends Config
 		return true;
 	}
 
-	@ConfigItem(
+	/*@ConfigItem(
 		keyName = "AnnounceLeaguesTasks",
 		name = "Leagues Tasks",
 		description = "Announces Leagues Task Completions with an Audio Clip"
 	)
 	default boolean AnnounceLeaguesTasks(){
 		return true;
-	}
+	}*/
 
 	@ConfigItem(
 		keyName = "AnnounceDeath",
@@ -139,5 +138,15 @@ public interface AColdOneCloggingConfig extends Config
 	default int LoopAmount()
 	{
 		return 1;
+	}
+	@ConfigItem(
+			keyName = "ZCBRuby",
+			name = "ZCB Ruby Spec",
+			description = "do not ask how this happened or why",
+			section = Misc
+	)
+	default boolean ZCBRuby()
+	{
+		return true;
 	}
 }
